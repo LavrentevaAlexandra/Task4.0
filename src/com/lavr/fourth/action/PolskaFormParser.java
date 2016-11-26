@@ -13,21 +13,10 @@ import java.util.regex.Pattern;
 public class PolskaFormParser {    // add replacement of increment & decrement as ++x=1+x, --x(--)= x-1
     private static final String LEFT_REGEX_INC = "\\+\\+((\\d)+)";
     private static final String RIGHT_REGEX_INC = "((\\d)+)\\+\\+";
-    private static final String LEFT_REGEX_DEC = "--((\\()*(-)?(\\d)+)";
+    private static final String LEFT_REGEX_DEC = "--((\\()+(-)?(\\d)+)|(--(\\d)+)";
     private static final String RIGHT_REGEX_DEC = "((\\d)+(\\))*)--";
-    private static final String NEGATIVE_REGEX="\\(+-[0-9]+";
     private static final String NUMBER_REGEX="[0-9]+";
 
-    private String replaceNegative(String expression){
-        Pattern negativePattern=Pattern.compile(NEGATIVE_REGEX);
-        Matcher negativeMatcher=negativePattern.matcher(expression);
-        String temp;
-        while(negativeMatcher.find()){
-            temp=negativeMatcher.group();
-            expression=negativeMatcher.replaceAll("((0-"+temp.substring(2)+")");
-        }
-        return expression;
-    }
 
     private String replaceIncAndDec(String expression){
         Pattern leftIncrementPattern=Pattern.compile(LEFT_REGEX_INC);
@@ -35,28 +24,30 @@ public class PolskaFormParser {    // add replacement of increment & decrement a
         Pattern leftDecrementPattern=Pattern.compile(LEFT_REGEX_DEC);
         Pattern rightDecrementPattern=Pattern.compile(RIGHT_REGEX_DEC);
 
-        String temp;
+        String suitable,ultimate;
         Matcher matcher=leftIncrementPattern.matcher(expression);
         while (matcher.find()) {
-            temp=matcher.group().substring(2);
-            expression=matcher.replaceAll("("+temp+"+1)");
+            suitable=matcher.group();
+            ultimate=suitable.substring(2);
+            expression=expression.replaceFirst("\\+\\+"+ultimate,"("+ultimate+"+1)");
         }
         matcher=rightIncrementPattern.matcher(expression);
         while (matcher.find()) {
-            temp=matcher.group();
-            temp=temp.substring(0,temp.length()-2);
-            expression=matcher.replaceAll("("+temp+"+1)");
+            suitable=matcher.group();
+            ultimate=suitable.substring(0,suitable.length()-2);
+            expression=expression.replaceFirst(ultimate+"\\+\\+","("+ultimate+"+1)");
         }
         matcher=leftDecrementPattern.matcher(expression);
         while (matcher.find()) {
-            temp=matcher.group().substring(2);
-            expression=matcher.replaceAll("("+temp+"-1)");
+            suitable=matcher.group();
+            ultimate=suitable.substring(2);
+            expression=expression.replaceFirst(suitable,"("+ultimate+"-1)");
         }
         matcher=rightDecrementPattern.matcher(expression);
         while (matcher.find()) {
-            temp=matcher.group();
-            temp=temp.substring(0,temp.length()-2);
-            expression=matcher.replaceAll("("+temp+"-1)");
+            suitable=matcher.group();
+            ultimate=suitable.substring(0,suitable.length()-2);
+            expression=expression.replaceFirst(suitable,"("+ultimate+"-1)");
         }
         return expression;
     }
@@ -66,7 +57,6 @@ public class PolskaFormParser {    // add replacement of increment & decrement a
         ArrayDeque<Character> stack = new ArrayDeque<>();
 
         expression=replaceIncAndDec(expression);
-        //expression=replaceNegative(expression);
 
         ArrayList<Integer>numbers=new ArrayList<>();
         Pattern numberPattern=Pattern.compile(NUMBER_REGEX);

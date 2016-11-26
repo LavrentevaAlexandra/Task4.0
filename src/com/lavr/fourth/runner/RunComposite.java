@@ -25,6 +25,6 @@ public class RunComposite {
         functions.deleteLexemes(wholeText,2,'i');
         textWriter.writeText("files\\With_Deleted_Lexemes(6_task).txt",wholeText.toString());
         functions.exchangeLexeme(wholeText);
-        textWriter.writeText("files\\With_Exchanged_Lexemes(6_task).txt",wholeText.toString());
+        textWriter.writeText("files\\With_Exchanged_Lexemes(3_task).txt",wholeText.toString());
     }
 }

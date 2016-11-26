@@ -69,7 +69,7 @@ public class FunctionalOpportunities {
     public void exchangeLexeme(TextComposite text){
         ArrayList<Component> list = text.getComponents();
         for (Component component : list) {
-            if (((TextComposite) component).getType().equals(ParsingComponentType.WORD)) {
+            if (((TextComposite) component).getType().equals(ParsingComponentType.LEXEME)) {
                 ArrayList<Component> lexemes = ((TextComposite) component).getComponents();
                 Component first = lexemes.get(0);
                 Component last=lexemes.get(lexemes.size()-1);
